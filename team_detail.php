@@ -137,11 +137,10 @@ $members = getTeamMembers($team['id']);
                 <div class="team-header-card">
                     <h1><?php echo htmlspecialchars($team['team_name']); ?></h1>
                     <div class="captain-badge">
-                        <strong>Captain</strong>
+                        <strong>Owner</strong>
                         <div style="font-size: 13px; font-weight: 600; margin-top: 4px;">
-                            <?php echo htmlspecialchars($team['captain_name']); ?>
+                            <?php echo htmlspecialchars($team['owner_name']); ?>
                         </div>
-                        <small style="opacity: 0.8; font-size: 11px;"><?php echo htmlspecialchars($team['captain_mobile']); ?></small>
                     </div>
                 </div>
                 

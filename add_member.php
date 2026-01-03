@@ -31,34 +31,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = "Person with SR No {$member_sr_no} not found.";
                 $messageType = 'error';
             } else {
-                // Check if person is already the captain
-                if ($team['captain_sr_no'] == $member_sr_no) {
-                    $message = "This person is already the captain of this team.";
+                // Check if person is already in any team
+                if (isPersonInTeam((int)$member_sr_no)) {
+                    $message = "This person is already assigned to a team.";
                     $messageType = 'error';
                 } else {
-                    // Check if person is already in any team
-                    if (isPersonInTeam((int)$member_sr_no)) {
-                        $message = "This person is already assigned to a team.";
-                        $messageType = 'error';
-                    } else {
-                        // Add member to team
-                        try {
-                            $db = getDB();
-                            $stmt = $db->prepare("
-                                INSERT INTO team_members (team_id, member_sr_no)
-                                VALUES (?, ?)
-                            ");
-                            $stmt->execute([$team_id, $member_sr_no]);
-                            $message = "Member added successfully!";
-                            $messageType = 'success';
-                        } catch (PDOException $e) {
-                            if (strpos($e->getMessage(), 'UNIQUE constraint') !== false) {
-                                $message = "This member is already in this team.";
-                            } else {
-                                $message = "Error: " . $e->getMessage();
-                            }
-                            $messageType = 'error';
+                    // Add member to team
+                    try {
+                        $db = getDB();
+                        $stmt = $db->prepare("
+                            INSERT INTO team_members (team_id, member_sr_no)
+                            VALUES (?, ?)
+                        ");
+                        $stmt->execute([$team_id, $member_sr_no]);
+                        $message = "Member added successfully!";
+                        $messageType = 'success';
+                    } catch (PDOException $e) {
+                        if (strpos($e->getMessage(), 'UNIQUE constraint') !== false) {
+                            $message = "This member is already in this team.";
+                        } else {
+                            $message = "Error: " . $e->getMessage();
                         }
+                        $messageType = 'error';
                     }
                 }
             }
@@ -88,7 +82,7 @@ if ($messageType === 'success') {
         
         <div class="nav">
             <a href="index.php">People Entry</a>
-            <a href="captains.php">Select Captains</a>
+            <a href="assign_owners.php">Assign Owners</a>
             <a href="teams.php">Team Dashboard</a>
         </div>
         

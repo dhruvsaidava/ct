@@ -25,13 +25,6 @@ function getPersonBySR($sr_no) {
 function isPersonInTeam($sr_no) {
     $db = getDB();
     
-    // Check if person is a captain
-    $stmt = $db->prepare("SELECT id FROM teams WHERE captain_sr_no = ?");
-    $stmt->execute([$sr_no]);
-    if ($stmt->fetch()) {
-        return true;
-    }
-    
     // Check if person is a member
     $stmt = $db->prepare("SELECT id FROM team_members WHERE member_sr_no = ?");
     $stmt->execute([$sr_no]);
@@ -58,9 +51,9 @@ function getTeam($team_id) {
 function getTeamByName($team_name) {
     $db = getDB();
     $stmt = $db->prepare("
-        SELECT t.*, p.full_name as captain_name, p.mobile_number as captain_mobile
+        SELECT t.*, o.owner_name
         FROM teams t
-        JOIN people p ON t.captain_sr_no = p.sr_no
+        JOIN owners o ON t.owner_id = o.id
         WHERE t.team_name = ?
     ");
     $stmt->execute([$team_name]);
@@ -82,15 +75,15 @@ function getTeamSlug($team_name) {
 }
 
 /**
- * Get all teams with captain info
+ * Get all teams with owner info
  * @return array
  */
 function getAllTeams() {
     $db = getDB();
     $stmt = $db->query("
-        SELECT t.*, p.full_name as captain_name, p.mobile_number as captain_mobile
+        SELECT t.*, o.owner_name
         FROM teams t
-        JOIN people p ON t.captain_sr_no = p.sr_no
+        JOIN owners o ON t.owner_id = o.id
         ORDER BY t.id
     ");
     return $stmt->fetchAll();
@@ -237,6 +230,62 @@ function deleteTeam($team_id) {
     } catch (PDOException $e) {
         return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
     }
+}
+
+/**
+ * Delete an owner (and all teams under that owner)
+ * @param int $owner_id
+ * @return array ['success' => bool, 'message' => string]
+ */
+function deleteOwner($owner_id) {
+    $db = getDB();
+    
+    try {
+        // Get all teams for this owner
+        $stmt = $db->prepare("SELECT id FROM teams WHERE owner_id = ?");
+        $stmt->execute([$owner_id]);
+        $teams = $stmt->fetchAll();
+        
+        // Delete team members for all teams
+        foreach ($teams as $team) {
+            $stmt = $db->prepare("DELETE FROM team_members WHERE team_id = ?");
+            $stmt->execute([$team['id']]);
+        }
+        
+        // Delete teams
+        $stmt = $db->prepare("DELETE FROM teams WHERE owner_id = ?");
+        $stmt->execute([$owner_id]);
+        
+        // Delete owner
+        $stmt = $db->prepare("DELETE FROM owners WHERE id = ?");
+        $stmt->execute([$owner_id]);
+        
+        return ['success' => true, 'message' => 'Owner deleted successfully.'];
+    } catch (PDOException $e) {
+        return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Get all owners
+ * @return array
+ */
+function getAllOwners() {
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM owners ORDER BY owner_name");
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get owner by ID
+ * @param int $owner_id
+ * @return array|false
+ */
+function getOwner($owner_id) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM owners WHERE id = ?");
+    $stmt->execute([$owner_id]);
+    return $stmt->fetch();
 }
 
 /**

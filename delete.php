@@ -65,7 +65,7 @@ header("Refresh: 2; url={$redirect}");
         
         <div class="nav">
             <a href="index.php">People Entry</a>
-            <a href="captains.php">Select Captains</a>
+            <a href="assign_owners.php">Assign Owners</a>
             <a href="teams.php">Team Dashboard</a>
         </div>
         

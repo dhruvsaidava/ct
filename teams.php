@@ -71,7 +71,7 @@ $totalMembers = $db->query("SELECT COUNT(*) as count FROM team_members")->fetch(
                 <?php if (empty($allTeams)): ?>
                     <div class="card">
                         <div class="message message-info">
-                            <span>No teams created yet. <a href="captains.php" style="color: var(--info); font-weight: 600;">Go to Select Captains</a> to create teams.</span>
+                            <span>No teams created yet. <a href="assign_owners.php" style="color: var(--info); font-weight: 600;">Go to Assign Owners</a> to create teams.</span>
                         </div>
                     </div>
                 <?php else: ?>
@@ -90,11 +90,10 @@ $totalMembers = $db->query("SELECT COUNT(*) as count FROM team_members")->fetch(
                             </div>
                             
                             <div class="captain-info">
-                                <strong>Captain</strong>
+                                <strong>Owner</strong>
                                 <div style="margin-top: 8px; font-size: 16px; font-weight: 600;">
-                                    <?php echo htmlspecialchars($team['captain_name']); ?>
+                                    <?php echo htmlspecialchars($team['owner_name']); ?>
                                 </div>
-                                <small style="color: var(--gray);"><?php echo htmlspecialchars($team['captain_mobile']); ?></small>
                             </div>
                             
                             <div class="members-list">

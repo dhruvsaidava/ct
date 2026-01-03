@@ -28,6 +28,15 @@ function getDB() {
 function initDatabase() {
     $db = getDB();
     
+    // Create Owners table
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS owners (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            owner_name TEXT NOT NULL UNIQUE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+    
     // Create People table
     $db->exec("
         CREATE TABLE IF NOT EXISTS people (
@@ -40,14 +49,35 @@ function initDatabase() {
         )
     ");
     
-    // Create Teams table
+    // Check if teams table exists with old structure (captain_sr_no)
+    $tableInfo = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='teams'")->fetch();
+    if ($tableInfo) {
+        // Check if old column exists
+        $columns = $db->query("PRAGMA table_info(teams)")->fetchAll();
+        $hasCaptainColumn = false;
+        foreach ($columns as $col) {
+            if ($col['name'] === 'captain_sr_no') {
+                $hasCaptainColumn = true;
+                break;
+            }
+        }
+        
+        // Migrate from captain_sr_no to owner_id if needed
+        if ($hasCaptainColumn) {
+            // Drop old teams and team_members tables (data will be lost, but user wants to clear anyway)
+            $db->exec("DROP TABLE IF EXISTS team_members");
+            $db->exec("DROP TABLE IF EXISTS teams");
+        }
+    }
+    
+    // Create Teams table with owner_id
     $db->exec("
         CREATE TABLE IF NOT EXISTS teams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             team_name TEXT NOT NULL,
-            captain_sr_no INTEGER NOT NULL,
+            owner_id INTEGER NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (captain_sr_no) REFERENCES people(sr_no)
+            FOREIGN KEY (owner_id) REFERENCES owners(id)
         )
     ");
     
@@ -66,9 +96,43 @@ function initDatabase() {
     
     // Create indexes for better performance
     $db->exec("CREATE INDEX IF NOT EXISTS idx_people_sr_no ON people(sr_no)");
-    $db->exec("CREATE INDEX IF NOT EXISTS idx_teams_captain ON teams(captain_sr_no)");
+    $db->exec("CREATE INDEX IF NOT EXISTS idx_teams_owner ON teams(owner_id)");
     $db->exec("CREATE INDEX IF NOT EXISTS idx_team_members_team ON team_members(team_id)");
     $db->exec("CREATE INDEX IF NOT EXISTS idx_team_members_member ON team_members(member_sr_no)");
+    
+    // Seed default owners if table is empty
+    seedDefaultOwners($db);
+}
+
+/**
+ * Seed default owners
+ */
+function seedDefaultOwners($db) {
+    $defaultOwners = [
+        'Nileshbhai Dharampur',
+        'Navnitbhai Vasudev bhai',
+        'Bharatbhai Motka',
+        'Dharmendrabhai Motka',
+        'Dhruv Motka',
+        'Dhruv zalodiya',
+        'Shrey Pareshbhai Motka',
+        'Nyalkaran Group',
+        'Vipul B Zalodiya',
+        'Priteshbhai Patel',
+        'Dilip Metal'
+    ];
+    
+    $count = $db->query("SELECT COUNT(*) as count FROM owners")->fetch()['count'];
+    if ($count == 0) {
+        $stmt = $db->prepare("INSERT INTO owners (owner_name) VALUES (?)");
+        foreach ($defaultOwners as $ownerName) {
+            try {
+                $stmt->execute([$ownerName]);
+            } catch (PDOException $e) {
+                // Ignore duplicates
+            }
+        }
+    }
 }
 
 // Initialize database on include
