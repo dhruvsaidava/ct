@@ -4,6 +4,9 @@
  * Shows all teams with captains and members, allows adding members
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 

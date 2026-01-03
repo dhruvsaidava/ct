@@ -4,6 +4,9 @@
  * Deletes all records from all tables
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 
 $message = '';

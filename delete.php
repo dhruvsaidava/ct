@@ -4,6 +4,9 @@
  * Handles deletion of people, team members, and teams
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 

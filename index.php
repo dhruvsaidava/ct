@@ -4,6 +4,9 @@
  * Allows bulk addition of people with CSV/line-based input support
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 

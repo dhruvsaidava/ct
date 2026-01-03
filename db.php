@@ -28,6 +28,20 @@ function getDB() {
 function initDatabase() {
     $db = getDB();
     
+    // Create Users table for portal managers
+    $db->exec("
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            full_name TEXT NOT NULL,
+            email TEXT,
+            is_active INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            last_login DATETIME
+        )
+    ");
+    
     // Create Owners table
     $db->exec("
         CREATE TABLE IF NOT EXISTS owners (
@@ -102,6 +116,9 @@ function initDatabase() {
     
     // Seed default owners if table is empty
     seedDefaultOwners($db);
+    
+    // Seed default admin user if table is empty
+    seedDefaultAdmin($db);
 }
 
 /**
@@ -132,6 +149,22 @@ function seedDefaultOwners($db) {
                 // Ignore duplicates
             }
         }
+    }
+}
+
+/**
+ * Seed default admin user
+ */
+function seedDefaultAdmin($db) {
+    $count = $db->query("SELECT COUNT(*) as count FROM users")->fetch()['count'];
+    if ($count == 0) {
+        // Default admin: username: admin, password: admin123
+        $passwordHash = password_hash('admin123', PASSWORD_DEFAULT);
+        $stmt = $db->prepare("
+            INSERT INTO users (username, password_hash, full_name, email, is_active)
+            VALUES (?, ?, ?, ?, ?)
+        ");
+        $stmt->execute(['admin', $passwordHash, 'Administrator', 'admin@example.com', 1]);
     }
 }
 

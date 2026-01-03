@@ -5,6 +5,9 @@
  * Accessible via clean URLs: /a, /b, /c, etc.
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 

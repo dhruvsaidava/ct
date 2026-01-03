@@ -4,6 +4,9 @@
  * Allows selecting owners and automatically creates teams
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 

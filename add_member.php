@@ -4,6 +4,9 @@
  * Handles adding a member to a team with validations
  */
 
+require_once 'auth.php';
+requireLogin();
+
 require_once 'db.php';
 require_once 'functions.php';
 
