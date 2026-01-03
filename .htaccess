@@ -1,0 +1,17 @@
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Base directory
+RewriteBase /ct/
+
+# Redirect clean URLs to team_detail.php
+# Matches: /a, /b, /c, etc. (single letter)
+RewriteRule ^([a-z])$ team_detail.php?team=$1 [L,QSA]
+
+# Also support uppercase
+RewriteRule ^([A-Z])$ team_detail.php?team=$1 [L,QSA]
+
+# Don't rewrite if file exists
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
