@@ -127,9 +127,24 @@ $members = getTeamMembers($team['id']);
                 <div class="page-title">
                     <span><?php echo htmlspecialchars($team['team_name']); ?></span>
                 </div>
-                <a href="teams.php" class="btn btn-secondary btn-small">
-                    <span>Back to Dashboard</span>
-                </a>
+                <div style="display: flex; gap: 8px;">
+                    <a href="export_team.php?team_id=<?php echo $team['id']; ?>&format=pdf" 
+                       class="btn btn-small" 
+                       style="background: #dc3545; color: white;"
+                       target="_blank"
+                       title="Export as PDF">
+                        <span>📄 Export PDF</span>
+                    </a>
+                    <a href="export_team.php?team_id=<?php echo $team['id']; ?>&format=list" 
+                       class="btn btn-small" 
+                       style="background: #28a745; color: white;"
+                       title="Export as CSV List">
+                        <span>📋 Export List</span>
+                    </a>
+                    <a href="teams.php" class="btn btn-secondary btn-small">
+                        <span>Back to Dashboard</span>
+                    </a>
+                </div>
             </div>
             
             <div class="container">

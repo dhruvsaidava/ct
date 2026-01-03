@@ -110,20 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .login-btn:hover {
             background: #e67e22;
         }
-        .default-credentials {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid var(--info);
-            font-size: 13px;
-            color: var(--dark);
-        }
-        .default-credentials strong {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
     </style>
 </head>
 <body>
@@ -158,12 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Login
                 </button>
             </form>
-            
-            <div class="default-credentials">
-                <strong>Default Credentials:</strong>
-                Username: <code>admin</code><br>
-                Password: <code>admin123</code>
-            </div>
         </div>
     </div>
 </body>

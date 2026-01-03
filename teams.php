@@ -139,8 +139,24 @@ $totalMembers = $db->query("SELECT COUNT(*) as count FROM team_members")->fetch(
                                    class="btn btn-small">
                                     <span>View Team Page</span>
                                 </a>
+                                <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                    <a href="export_team.php?team_id=<?php echo $team['id']; ?>&format=pdf" 
+                                       class="btn btn-small" 
+                                       style="background: #dc3545; color: white;"
+                                       target="_blank"
+                                       title="Export as PDF">
+                                        <span>📄 PDF</span>
+                                    </a>
+                                    <a href="export_team.php?team_id=<?php echo $team['id']; ?>&format=list" 
+                                       class="btn btn-small" 
+                                       style="background: #28a745; color: white;"
+                                       title="Export as CSV List">
+                                        <span>📋 List</span>
+                                    </a>
+                                </div>
                                 <a href="delete.php?action=team&id=<?php echo $team['id']; ?>" 
                                    class="btn btn-danger btn-small"
+                                   style="margin-top: 8px;"
                                    onclick="return confirm('Delete <?php echo htmlspecialchars($team['team_name']); ?>?\n\nThis will remove the team and all its members.');">
                                     <span>Delete Team</span>
                                 </a>
